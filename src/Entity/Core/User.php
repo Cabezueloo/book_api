@@ -8,8 +8,29 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use App\Controller\Core\MeController;
 
-#[ApiResource]
+
+#[ApiResource(operations: [
+    new Get(),
+    new GetCollection(),
+    new Post(),
+    new Put(),
+    new Patch(),
+    new Delete(),
+    new Get(
+        name: 'me',
+        uriTemplate: "me",
+        controller: MeController::class,
+        read: false
+    )
+],)]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'table_user', schema: 'schema_books')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
