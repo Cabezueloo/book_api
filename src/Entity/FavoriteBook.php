@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Entity\Core\User;
 use App\Repository\FavoriteBookRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -16,43 +17,23 @@ class FavoriteBook
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(name:'user_id')]
-    private ?int $userId = null;
-
-    #[ORM\Column(name:'book_id')]
-    private ?int $bookId = null;
-
     #[ORM\Column(name:'created_at')]
     private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'favoriteBooks')]
+    #[ORM\JoinColumn(name:'user_id',nullable: false)]
+    private ?User $user = null;
+
+    #[ORM\ManyToOne(inversedBy: 'favoriteBooks')]
+    #[ORM\JoinColumn(name:'book_id')]
+    private ?Book $book = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUserId(): ?int
-    {
-        return $this->userId;
-    }
-
-    public function setUserId(int $userId): static
-    {
-        $this->userId = $userId;
-
-        return $this;
-    }
-
-    public function getBookId(): ?int
-    {
-        return $this->bookId;
-    }
-
-    public function setBookId(int $bookId): static
-    {
-        $this->bookId = $bookId;
-
-        return $this;
-    }
+    
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
@@ -62,6 +43,30 @@ class FavoriteBook
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getBook(): ?Book
+    {
+        return $this->book;
+    }
+
+    public function setBook(?Book $book): static
+    {
+        $this->book = $book;
 
         return $this;
     }

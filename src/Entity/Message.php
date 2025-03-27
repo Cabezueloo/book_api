@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Entity\Core\User;
 use App\Repository\MessageRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -19,17 +20,24 @@ class Message
     #[ORM\Column(length: 255)]
     private ?string $text = null;
 
-    #[ORM\Column(name:'sender_id')]
-    private ?int $senderId = null;
-
-    #[ORM\Column(name:'receiver_id')]
-    private ?int $receiverId = null;
 
     #[ORM\Column(name:'created_at')]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(length: 255, nullable: true,name:"from_book")]
-    private ?int $fromBook = null;
+
+    #[ORM\ManyToOne(inversedBy: 'messages')]
+    #[ORM\JoinColumn(nullable: false,name:"from_book_id")]
+    private ?Book $fromBook = null;
+
+    #[ORM\ManyToOne(inversedBy: 'messages')]
+    #[ORM\JoinColumn(name:'sender_id',nullable: false)]
+    private ?User $sender = null;
+
+    #[ORM\ManyToOne(inversedBy: 'receivedMessages')]
+    #[ORM\JoinColumn(name:"receiver_id",nullable: false)]
+    private ?User $receiver = null;
+
+    
 
     public function getId(): ?int
     {
@@ -48,26 +56,16 @@ class Message
         return $this;
     }
 
-    public function getSenderId(): ?int
+   
+
+    public function getReceiver(): ?User
     {
-        return $this->senderId;
+        return $this->receiver;
     }
 
-    public function setSenderId(int $senderId): static
+    public function setReceiver(User $receiver): static
     {
-        $this->senderId = $senderId;
-
-        return $this;
-    }
-
-    public function getReceiverId(): ?int
-    {
-        return $this->receiverId;
-    }
-
-    public function setReceiverId(int $receiverId): static
-    {
-        $this->receiverId = $receiverId;
+        $this->receiver = $receiver;
 
         return $this;
     }
@@ -84,15 +82,29 @@ class Message
         return $this;
     }
 
-    public function getFromBook(): ?int
+    public function getFromBook(): ?Book
     {
         return $this->fromBook;
     }
 
-    public function setFromBook(?int $fromBook): static
+    public function setFromBook(?Book $fromBook): static
     {
         $this->fromBook = $fromBook;
 
         return $this;
     }
+
+    public function getSender(): ?User
+    {
+        return $this->sender;
+    }
+
+    public function setSender(?User $sender): static
+    {
+        $this->sender = $sender;
+
+        return $this;
+    }
+
+    
 }

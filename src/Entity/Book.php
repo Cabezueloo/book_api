@@ -3,8 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Entity\Core\User;
 use App\Enum\StatusBook;
 use App\Repository\BookRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -27,7 +30,7 @@ class Book
     #[ORM\Column]
     private ?float $price = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column]
     private ?int $category = null;
 
     
@@ -46,14 +49,42 @@ class Book
     private ?string $description = null;
 
 
-    #[ORM\Column(name: 'owner_id')]
-    private ?int $ownerId = null;
+   
 
     #[ORM\Column(enumType: StatusBook::class,name:"status_book")]
-    private ?string $status = null;
+    private ?StatusBook $status = null;
 
     #[ORM\Column(name: 'image_book', type: Types::BLOB)]
     private $imageBook = null;
+
+    #[ORM\ManyToOne(inversedBy: 'books')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
+
+    /**
+     * @var Collection<int, FavoriteBook>
+     */
+    #[ORM\OneToMany(targetEntity: FavoriteBook::class, mappedBy: 'book')]
+    private Collection $favoriteBooks;
+
+    /**
+     * @var Collection<int, BookTransaction>
+     */
+    #[ORM\OneToMany(targetEntity: BookTransaction::class, mappedBy: 'book')]
+    private Collection $bookTransactions;
+
+    /**
+     * @var Collection<int, Message>
+     */
+    #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'fromBook')]
+    private Collection $messages;
+
+    public function __construct()
+    {
+        $this->favoriteBooks = new ArrayCollection();
+        $this->bookTransactions = new ArrayCollection();
+        $this->messages = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -156,24 +187,13 @@ class Book
         return $this;
     }
 
-    public function getOwnerId(): ?int
-    {
-        return $this->ownerId;
-    }
-
-    public function setOwnerId(int $ownerId): static
-    {
-        $this->ownerId = $ownerId;
-
-        return $this;
-    }
-
-    public function getStatus(): ?string
+    
+    public function getStatus(): ?StatusBook
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(StatusBook $status): static
     {
         $this->status = $status;
 
@@ -188,6 +208,108 @@ class Book
     public function setImageBook($imageBook): static
     {
         $this->imageBook = $imageBook;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FavoriteBook>
+     */
+    public function getFavoriteBooks(): Collection
+    {
+        return $this->favoriteBooks;
+    }
+
+    public function addFavoriteBook(FavoriteBook $favoriteBook): static
+    {
+        if (!$this->favoriteBooks->contains($favoriteBook)) {
+            $this->favoriteBooks->add($favoriteBook);
+            $favoriteBook->setBook($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFavoriteBook(FavoriteBook $favoriteBook): static
+    {
+        if ($this->favoriteBooks->removeElement($favoriteBook)) {
+            // set the owning side to null (unless already changed)
+            if ($favoriteBook->getBook() === $this) {
+                $favoriteBook->setBook(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, BookTransaction>
+     */
+    public function getBookTransactions(): Collection
+    {
+        return $this->bookTransactions;
+    }
+
+    public function addBookTransaction(BookTransaction $bookTransaction): static
+    {
+        if (!$this->bookTransactions->contains($bookTransaction)) {
+            $this->bookTransactions->add($bookTransaction);
+            $bookTransaction->setBook($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBookTransaction(BookTransaction $bookTransaction): static
+    {
+        if ($this->bookTransactions->removeElement($bookTransaction)) {
+            // set the owning side to null (unless already changed)
+            if ($bookTransaction->getBook() === $this) {
+                $bookTransaction->setBook($this);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): static
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages->add($message);
+            $message->setFromBook($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): static
+    {
+        if ($this->messages->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getFromBook() === $this) {
+                $message->setFromBook(null);
+            }
+        }
 
         return $this;
     }

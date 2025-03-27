@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Entity\Core\User;
 use App\Enum\StatusTransaction;
 use App\Enum\TransactionType;
 use App\Repository\BookTransactionRepository;
@@ -18,14 +19,6 @@ class BookTransaction
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(name:'buyer_id')]
-    private ?int $buyerId = null;
-
-    #[ORM\Column(name:'seller_id')]
-    private ?int $sellerId = null;
-
-    #[ORM\Column(name:'book_id')]
-    private ?int $bookId = null;
 
     #[ORM\Column(enumType: TransactionType::class,name:"transaction_type")]
     private ?TransactionType $transactionType = null;
@@ -36,46 +29,35 @@ class BookTransaction
     #[ORM\Column(name:"created_at")]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'bookTransactions')]
+    #[ORM\JoinColumn]
+    private ?User $buyer = null;
+
+    #[ORM\ManyToOne(inversedBy: 'bookTransactionsSeller')]
+    #[ORM\JoinColumn(name:'seller_id',nullable: false)]
+    private ?User $seller = null;
+
+    #[ORM\ManyToOne(inversedBy: 'bookTransactions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Book $book = null;
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getBuyerId(): ?int
+    public function getBuyer(): ?User
     {
-        return $this->buyerId;
+        return $this->buyer;
     }
 
-    public function setBuyerId(int $buyerId): static
+    public function setBuyer(User $buyer): static
     {
-        $this->buyerId = $buyerId;
+        $this->buyer = $buyer;
 
         return $this;
     }
 
-    public function getSellerId(): ?int
-    {
-        return $this->sellerId;
-    }
-
-    public function setSellerId(int $sellerId): static
-    {
-        $this->sellerId = $sellerId;
-
-        return $this;
-    }
-
-    public function getBookId(): ?int
-    {
-        return $this->bookId;
-    }
-
-    public function setBookId(int $bookId): static
-    {
-        $this->bookId = $bookId;
-
-        return $this;
-    }
 
     public function getTransactionType(): ?TransactionType
     {
@@ -109,6 +91,30 @@ class BookTransaction
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getSeller(): ?User
+    {
+        return $this->seller;
+    }
+
+    public function setSeller(?User $seller): static
+    {
+        $this->seller = $seller;
+
+        return $this;
+    }
+
+    public function getBook(): ?Book
+    {
+        return $this->book;
+    }
+
+    public function setBook(?Book $book): static
+    {
+        $this->book = $book;
 
         return $this;
     }
