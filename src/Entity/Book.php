@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Enum\StatusBook;
 use App\Repository\BookRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ApiResource]
@@ -47,8 +49,11 @@ class Book
     #[ORM\Column(name: 'owner_id')]
     private ?int $ownerId = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(enumType: StatusBook::class,name:"status_book")]
     private ?string $status = null;
+
+    #[ORM\Column(name: 'image_book', type: Types::BLOB)]
+    private $imageBook = null;
 
     public function getId(): ?int
     {
@@ -171,6 +176,18 @@ class Book
     public function setStatus(string $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getImageBook()
+    {
+        return $this->imageBook;
+    }
+
+    public function setImageBook($imageBook): static
+    {
+        $this->imageBook = $imageBook;
 
         return $this;
     }
