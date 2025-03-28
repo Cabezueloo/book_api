@@ -29,6 +29,8 @@ services:
         tags:
           - { name: doctrine.orm.entity_listener}
 
+    App\Serializer\MediaObjectDataTransformer:
+        tags: ['api_platform.data_transformer']
     
 
     # add more service definitions when explicit configuration is needed

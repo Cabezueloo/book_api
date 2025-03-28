@@ -64,9 +64,7 @@ class Book
     #[Groups(['book:read', 'book:write'])]
     private ?StatusBook $status = null;
 
-    #[ORM\Column(name: 'image_book', type: Types::BLOB,nullable:true)]
-    #[Groups(['book:read',])]
-    private $imageBook = null;
+    
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'books', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
@@ -76,6 +74,24 @@ class Book
     #[Groups(['book:write'],)] // Add this to the serialization groups
     private ?int $ownerId = null;
 
+    
+    #[Groups(['book:read'])]
+    private ?string $image = null;
+    
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+    
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
+        return $this;
+
+    }
+
+
+    
     public function getOwnerId(): ?int
     {
         return $this->ownerId;
@@ -103,12 +119,14 @@ class Book
     #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'fromBook')]
     private Collection $messages;
 
+   
     public function __construct()
     {
         $this->favoriteBooks = new ArrayCollection();
         $this->bookTransactions = new ArrayCollection();
         $this->messages = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
+        $this->image = "testImage";
     }
 
     public function getId(): ?int
@@ -225,17 +243,7 @@ class Book
         return $this;
     }
 
-    public function getImageBook()
-    {
-        return $this->imageBook;
-    }
-
-    public function setImageBook($imageBook): static
-    {
-        $this->imageBook = $imageBook;
-
-        return $this;
-    }
+   
 
     public function getOwner(): ?User
     {
@@ -338,4 +346,6 @@ class Book
 
         return $this;
     }
+
+   
 }

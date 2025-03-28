@@ -20,7 +20,7 @@ class BookListener
 
         if ($book->getOwnerId() !== null) {
 
-            #dump("PrePersist triggered for Book entity"); // Debugging
+            
             $user = $this->em->getRepository(User::class)->find($book->getOwnerId());
             
             if (!$user) {
@@ -28,7 +28,6 @@ class BookListener
             }
 
             $book->setOwner($user);
-
             //Get the image book
             //$book->setImageBook($book->setImageBook(base64ToResource($book->getImageBook())));
         }
