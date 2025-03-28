@@ -4,14 +4,22 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Core\User;
+use App\Entity\EntityListener\BookListener;
 use App\Enum\StatusBook;
 use App\Repository\BookRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Cache\Adapter\NullAdapter;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource]
+
+#[ORM\EntityListeners([BookListener::class])]
+#[ApiResource(
+    normalizationContext: ['groups' => ['book:read']],
+    denormalizationContext: ['groups' => ['book:write']],
+)]
 #[ORM\Entity(repositoryClass: BookRepository::class)]
 #[ORM\Table(name: 'table_book', schema: 'schema_books')]
 class Book
@@ -22,44 +30,60 @@ class Book
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['book:read', 'book:write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['book:read', 'book:write'])]
     private ?string $author = null;
 
     #[ORM\Column]
+    #[Groups(['book:read', 'book:write'])]
     private ?float $price = null;
 
     #[ORM\Column]
+    #[Groups(['book:read', 'book:write'])]
     private ?int $category = null;
 
-    
     #[ORM\Column(name: 'is_interchangeable')]
+    #[Groups(['book:read', 'book:write'])]
     private ?bool $isInterchangeable = null;
-
 
     #[ORM\Column(name: 'created_at', type: 'datetime_immutable')]
     private ?\DateTimeImmutable $createdAt = null;
 
-
     #[ORM\Column(name: 'ubicated_in')]
+    #[Groups(['book:read', 'book:write'])]
     private ?float $ubicatedIn = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['book:read', 'book:write'])]
     private ?string $description = null;
 
-
-   
-
-    #[ORM\Column(enumType: StatusBook::class,name:"status_book")]
+    #[ORM\Column(enumType: StatusBook::class, name: "status_book")]
+    #[Groups(['book:read', 'book:write'])]
     private ?StatusBook $status = null;
 
-    #[ORM\Column(name: 'image_book', type: Types::BLOB)]
+    #[ORM\Column(name: 'image_book', type: Types::BLOB,nullable:true)]
+    #[Groups(['book:read',])]
     private $imageBook = null;
 
-    #[ORM\ManyToOne(inversedBy: 'books')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'books', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['book:read'])]
     private ?User $owner = null;
+
+    #[Groups(['book:write'],)] // Add this to the serialization groups
+    private ?int $ownerId = null;
+
+    public function getOwnerId(): ?int
+    {
+        return $this->ownerId;
+    }
+    public function setOwnerId(?int $ownerId): void
+    {
+        $this->ownerId = $ownerId;
+    }
 
     /**
      * @var Collection<int, FavoriteBook>
@@ -84,6 +108,7 @@ class Book
         $this->favoriteBooks = new ArrayCollection();
         $this->bookTransactions = new ArrayCollection();
         $this->messages = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -187,7 +212,7 @@ class Book
         return $this;
     }
 
-    
+
     public function getStatus(): ?StatusBook
     {
         return $this->status;
