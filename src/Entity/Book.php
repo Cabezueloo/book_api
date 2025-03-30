@@ -60,10 +60,10 @@ class Book
     #[Groups(['book:read', 'book:write'])]
     private ?string $description = null;
 
-    #[ORM\Column(enumType: StatusBook::class, name: "status_book")]
+    #[ORM\Column(type: "string", enumType: StatusBook::class, name: "status_book")]
     #[Groups(['book:read', 'book:write'])]
     private ?StatusBook $status = null;
-
+    
     
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'books', cascade: ['persist'])]
