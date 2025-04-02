@@ -5,7 +5,7 @@ namespace App\Enum;
 enum StatusTransaction: string 
 {
 
-    case PENDING = 'pending' ;
-    case COMPLETED = 'completed' ;
-    case CANCELED = 'canceled';
+    case PENDING = 'Pending' ;
+    case COMPLETED = 'Completed' ;
+    case CANCELED = 'Canceled';
 }

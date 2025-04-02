@@ -5,7 +5,7 @@ namespace App\Enum;
 enum StatusBook: string 
 {
 
-    case AVAILABLE = 'available' ;
-    case SOLD = 'sold' ;
-    case SWAP = 'swap';
+    case AVAILABLE = 'Available' ;
+    case SOLD = 'Sold' ;
+    case SWAP = 'Swap';
 }

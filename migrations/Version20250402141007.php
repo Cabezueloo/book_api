@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250330100725 extends AbstractMigration
+final class Version20250402141007 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,13 +21,13 @@ final class Version20250330100725 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SCHEMA schema_books');
-        $this->addSql('CREATE SEQUENCE media_object_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
+        $this->addSql('CREATE SEQUENCE schema_books.media_object_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE schema_books.table_book_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE schema_books.table_book_transaction_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE schema_books.table_favorite_book_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE schema_books.table_message_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE schema_books.table_user_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('CREATE TABLE media_object (id INT NOT NULL, file_path VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE schema_books.media_object (id INT NOT NULL, file_path VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE TABLE schema_books.table_book (id INT NOT NULL, owner_id INT NOT NULL, name VARCHAR(255) NOT NULL, author VARCHAR(255) NOT NULL, price DOUBLE PRECISION NOT NULL, category INT NOT NULL, is_interchangeable BOOLEAN NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, ubicated_in DOUBLE PRECISION NOT NULL, description VARCHAR(255) NOT NULL, status_book VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_9DEC648B7E3C61F9 ON schema_books.table_book (owner_id)');
         $this->addSql('COMMENT ON COLUMN schema_books.table_book.created_at IS \'(DC2Type:datetime_immutable)\'');
@@ -63,7 +63,7 @@ final class Version20250330100725 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('DROP SEQUENCE media_object_id_seq CASCADE');
+        $this->addSql('DROP SEQUENCE schema_books.media_object_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE schema_books.table_book_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE schema_books.table_book_transaction_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE schema_books.table_favorite_book_id_seq CASCADE');
@@ -78,7 +78,7 @@ final class Version20250330100725 extends AbstractMigration
         $this->addSql('ALTER TABLE schema_books.table_message DROP CONSTRAINT FK_8313B2C290FC502E');
         $this->addSql('ALTER TABLE schema_books.table_message DROP CONSTRAINT FK_8313B2C2F624B39D');
         $this->addSql('ALTER TABLE schema_books.table_message DROP CONSTRAINT FK_8313B2C2CD53EDB6');
-        $this->addSql('DROP TABLE media_object');
+        $this->addSql('DROP TABLE schema_books.media_object');
         $this->addSql('DROP TABLE schema_books.table_book');
         $this->addSql('DROP TABLE schema_books.table_book_transaction');
         $this->addSql('DROP TABLE schema_books.table_favorite_book');

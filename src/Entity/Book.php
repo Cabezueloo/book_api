@@ -2,6 +2,10 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Core\User;
 use App\Entity\EntityListener\BookListener;
@@ -15,6 +19,8 @@ use Symfony\Component\Cache\Adapter\NullAdapter;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 
+
+
 #[ORM\EntityListeners([BookListener::class])]
 #[ApiResource(
     normalizationContext: ['groups' => ['book:read']],
@@ -22,6 +28,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 #[ORM\Entity(repositoryClass: BookRepository::class)]
 #[ORM\Table(name: 'table_book', schema: 'schema_books')]
+#[ApiFilter(SearchFilter::class, properties: ['name' => 'ipartial', 'author' => 'ipartial', 'category' => 'exact'])]
+#[ApiFilter(RangeFilter::class, properties: ['price'])]
+#[ApiFilter(OrderFilter::class, properties: ['createdAt','price'])]
+
 class Book
 {
     #[ORM\Id]
