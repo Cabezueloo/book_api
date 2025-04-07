@@ -6,6 +6,7 @@ use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Core\User;
 use App\Entity\EntityListener\BookListener;
@@ -85,20 +86,23 @@ class Book
     private ?int $ownerId = null;
 
     
-    #[Groups(['book:read'])]
-    private ?string $image = null;
+    #[ORM\ManyToOne(targetEntity: MediaObject::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    #[ApiProperty(types: ['https://schema.org/image'])]
+    #[Groups(['book:write','book:read'],)] // Add this to the serialization groups
+    public ?MediaObject $image = null;
     
-    public function getImage(): ?string
+    public function getImage(): ?MediaObject
     {
         return $this->image;
     }
     
-    public function setImage(?string $image): static
+    public function setImage(?MediaObject $image): static
     {
         $this->image = $image;
         return $this;
-
     }
+    
 
 
     
@@ -136,7 +140,7 @@ class Book
         $this->bookTransactions = new ArrayCollection();
         $this->messages = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
-        $this->image = "testImage";
+        
     }
 
     public function getId(): ?int
