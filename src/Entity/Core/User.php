@@ -87,6 +87,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, FavoriteBook>
      */
     #[ORM\OneToMany(targetEntity: FavoriteBook::class, mappedBy: 'user')]
+    #[Groups(['user:read'])]
     private Collection $favoriteBooks;
 
     /**

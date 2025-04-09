@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250402141043 extends AbstractMigration
+final class Version20250409190013 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,6 +20,7 @@ final class Version20250402141043 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql('CREATE SCHEMA schema_books');
         $this->addSql('CREATE SEQUENCE schema_books.media_object_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE schema_books.table_book_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE schema_books.table_book_transaction_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
@@ -27,8 +28,9 @@ final class Version20250402141043 extends AbstractMigration
         $this->addSql('CREATE SEQUENCE schema_books.table_message_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE schema_books.table_user_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE TABLE schema_books.media_object (id INT NOT NULL, file_path VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE TABLE schema_books.table_book (id INT NOT NULL, owner_id INT NOT NULL, name VARCHAR(255) NOT NULL, author VARCHAR(255) NOT NULL, price DOUBLE PRECISION NOT NULL, category INT NOT NULL, is_interchangeable BOOLEAN NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, ubicated_in DOUBLE PRECISION NOT NULL, description VARCHAR(255) NOT NULL, status_book VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE schema_books.table_book (id INT NOT NULL, owner_id INT NOT NULL, image_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, author VARCHAR(255) NOT NULL, price DOUBLE PRECISION NOT NULL, category INT NOT NULL, is_interchangeable BOOLEAN NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, ubicated_in DOUBLE PRECISION NOT NULL, description VARCHAR(255) NOT NULL, status_book VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_9DEC648B7E3C61F9 ON schema_books.table_book (owner_id)');
+        $this->addSql('CREATE INDEX IDX_9DEC648B3DA5256D ON schema_books.table_book (image_id)');
         $this->addSql('COMMENT ON COLUMN schema_books.table_book.created_at IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('CREATE TABLE schema_books.table_book_transaction (id INT NOT NULL, buyer_id INT DEFAULT NULL, seller_id INT NOT NULL, book_id INT NOT NULL, transaction_type VARCHAR(255) NOT NULL, status_transaction VARCHAR(255) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_CBD6D1ED6C755722 ON schema_books.table_book_transaction (buyer_id)');
@@ -49,6 +51,7 @@ final class Version20250402141043 extends AbstractMigration
         $this->addSql('CREATE UNIQUE INDEX UNIQ_DB9A11F3E7927C74 ON schema_books.table_user (email)');
         $this->addSql('COMMENT ON COLUMN schema_books.table_user.created_at IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('ALTER TABLE schema_books.table_book ADD CONSTRAINT FK_9DEC648B7E3C61F9 FOREIGN KEY (owner_id) REFERENCES schema_books.table_user (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE schema_books.table_book ADD CONSTRAINT FK_9DEC648B3DA5256D FOREIGN KEY (image_id) REFERENCES schema_books.media_object (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE schema_books.table_book_transaction ADD CONSTRAINT FK_CBD6D1ED6C755722 FOREIGN KEY (buyer_id) REFERENCES schema_books.table_user (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE schema_books.table_book_transaction ADD CONSTRAINT FK_CBD6D1ED8DE820D9 FOREIGN KEY (seller_id) REFERENCES schema_books.table_user (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE schema_books.table_book_transaction ADD CONSTRAINT FK_CBD6D1ED16A2B381 FOREIGN KEY (book_id) REFERENCES schema_books.table_book (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
@@ -62,8 +65,6 @@ final class Version20250402141043 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE SCHEMA public');
-        $this->addSql('CREATE SCHEMA schema_boo');
         $this->addSql('DROP SEQUENCE schema_books.media_object_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE schema_books.table_book_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE schema_books.table_book_transaction_id_seq CASCADE');
@@ -71,6 +72,7 @@ final class Version20250402141043 extends AbstractMigration
         $this->addSql('DROP SEQUENCE schema_books.table_message_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE schema_books.table_user_id_seq CASCADE');
         $this->addSql('ALTER TABLE schema_books.table_book DROP CONSTRAINT FK_9DEC648B7E3C61F9');
+        $this->addSql('ALTER TABLE schema_books.table_book DROP CONSTRAINT FK_9DEC648B3DA5256D');
         $this->addSql('ALTER TABLE schema_books.table_book_transaction DROP CONSTRAINT FK_CBD6D1ED6C755722');
         $this->addSql('ALTER TABLE schema_books.table_book_transaction DROP CONSTRAINT FK_CBD6D1ED8DE820D9');
         $this->addSql('ALTER TABLE schema_books.table_book_transaction DROP CONSTRAINT FK_CBD6D1ED16A2B381');

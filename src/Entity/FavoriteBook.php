@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Core\User;
 use App\Repository\FavoriteBookRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: FavoriteBookRepository::class)]
 #[ApiResource]
@@ -26,13 +27,18 @@ class FavoriteBook
 
     #[ORM\ManyToOne(inversedBy: 'favoriteBooks')]
     #[ORM\JoinColumn(name:'book_id')]
+    #[Groups(['user:read'])]
     private ?Book $book = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
 
+    }
     
 
     public function getCreatedAt(): ?\DateTimeImmutable
