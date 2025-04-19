@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
@@ -18,9 +19,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Cache\Adapter\NullAdapter;
 use Symfony\Component\Serializer\Annotation\Groups;
-
-
-
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\EntityListeners([BookListener::class])]
 #[ApiResource(
@@ -30,8 +29,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: BookRepository::class)]
 #[ORM\Table(name: 'table_book', schema: 'schema_books')]
 #[ApiFilter(SearchFilter::class, properties: ['name' => 'ipartial', 'author' => 'ipartial', 'category' => 'exact'])]
+#[ApiFilter(BooleanFilter::class, properties:['isInterchangeable'])]
 #[ApiFilter(RangeFilter::class, properties: ['price'])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt','price'])]
+
 
 class Book
 {
@@ -56,9 +57,10 @@ class Book
     #[Groups(['book:read', 'book:write'])]
     private ?int $category = null;
 
-    #[ORM\Column(name: 'is_interchangeable')]
+    #[ORM\Column(nullable:false)]
     #[Groups(['book:read', 'book:write'])]
-    private ?bool $isInterchangeable = null;
+    #[SerializedName('isInterchangeable')]
+    private bool $isInterchangeable;
 
     #[ORM\Column(name: 'created_at', type: 'datetime_immutable')]
     private ?\DateTimeImmutable $createdAt = null;
@@ -196,7 +198,7 @@ class Book
         return $this;
     }
 
-    public function isInterchangeable(): ?bool
+    public function getIsInterchangeable(): bool
     {
         return $this->isInterchangeable;
     }
