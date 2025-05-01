@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Core\User;
 use App\Repository\MessageRepository;
@@ -10,6 +12,14 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
 #[ApiResource]
 #[ORM\Table(name: 'table_message', schema: 'schema_books')]
+#[ApiFilter(
+    SearchFilter::class,
+    properties: [
+        'sender.id'   => 'exact',
+        'receiver.id' => 'exact',
+        'fromBook.id' => 'exact',
+    ]
+)]
 class Message
 {
     #[ORM\Id]
@@ -37,7 +47,11 @@ class Message
     #[ORM\JoinColumn(name:"receiver_id",nullable: false)]
     private ?User $receiver = null;
 
-    
+    public function __construct(){
+        $this->createdAt = new \DateTimeImmutable();
+
+    }
+
 
     public function getId(): ?int
     {
